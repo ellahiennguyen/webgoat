@@ -1,18 +1,21 @@
-name: Webgoat                                 # workflow name
-
-on:
-  push:                                       
-    branches:                                 # similar to "only" in GitLab
-      - main
-
-jobs:
-  build:
+  odc-backend:
     runs-on: ubuntu-latest
+    name: depecheck_test
     steps:
-      - run: echo "This is a build step"
+      - name: Checkout
+        uses: actions/checkout@v2
 
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - run: echo "This is a test step"
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
+        with:
+          project: 'webgoat'
+          path: '.'
+          format: 'CSV'
+          others: ''
+
+      - name: Upload Test results
+        uses: actions/upload-artifact@master
+        with:
+           name: Depcheck report
+           path: ${{github.workspace}}/reports
